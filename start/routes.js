@@ -18,3 +18,10 @@ const Route = use('Route')
 Route.get('/', ({ request }) => {
   return { greeting: 'Finwice REST API.' }
 })
+
+
+Route.group(()=> {
+  Route.post('register', 'UserController.register')
+
+  Route.post('login', 'UserController.login')
+}).prefix('v1/auth')
