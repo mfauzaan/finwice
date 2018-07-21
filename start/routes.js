@@ -24,9 +24,12 @@ Route.group(()=> {
   Route.post('register', 'UserController.register').validator('User/Register')
 
   Route.post('login', 'UserController.login')
-
 }).prefix('v1/auth')
 
 Route.group(() => {
   Route.get('/', 'FeedController.index')
-}).prefix('v1/')
+
+  Route.post('bank_data', 'BankController.store')
+
+  Route.resource('transactions', 'TransactionController')
+}).prefix('v1/').middleware('auth')

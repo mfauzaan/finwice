@@ -23,7 +23,14 @@ class UserController {
   async login({ request, auth, response }) {
     // Get Required data
     const { mobile_number, password } = request.all()
+
     
+      const userData = await User.findBy({ mobile_number })
+
+      if (!userData) {
+        return response.unauthorized({ title: 'Login Failed', body: 'User not found.'})
+      }
+   
     // Try to login
     const user = await auth.attempt(mobile_number, password)
 
