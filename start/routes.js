@@ -16,5 +16,5 @@
 const Route = use('Route')
 
 Route.get('/', ({ request }) => {
-  return { greeting: 'Hello world in JSON' }
+  return { greeting: 'Finwice REST API.' }
 })
