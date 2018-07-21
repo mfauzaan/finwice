@@ -21,7 +21,12 @@ Route.get('/', ({ request }) => {
 
 
 Route.group(()=> {
-  Route.post('register', 'UserController.register')
+  Route.post('register', 'UserController.register').validator('User/Register')
 
   Route.post('login', 'UserController.login')
+
 }).prefix('v1/auth')
+
+Route.group(() => {
+  Route.get('/', 'FeedController.index')
+}).prefix('v1/')
