@@ -8,8 +8,9 @@ class Transaction extends Model {
   }
 
   merchants() {
-    return this.hasMany('App/Models/Merchant', 'merchant_id', 'id')
+    return this.hasOne('App/Models/Merchant', 'merchant_id', 'id')
   }
+
 }
 
 module.exports = Transaction

@@ -6,12 +6,26 @@ const axios = use('axios')
 
 class TransactionController {
   async index({ auth }) {
-    return await Transaction.query().where({ user_id: auth.user.id }).with('merchants.categories').fetch()
+    var transactions = await Transaction.query().where({ user_id: auth.user.id }).with('merchants.categories').fetch()
+    
+    transactions = transactions.toJSON()
+
+    for(var i in transactions) {
+      transactions[i].icon = 'default.png'
+      if (transactions[i].merchants) {
+        if (transactions[i].merchants.categories) {
+         // transactions[i].icon = transactions.merchants.categories
+          transactions[i].icon = `${transactions[i].merchants.categories.name}.png`
+        }
+      }
+      
+    }
+    return transactions
   }
 
   async store({ response, request, auth }) {
     // Get Payload
-    const { payload, bank, type, transaction_date, activity, title, amount, merchant_id } = request.all()
+    const { payload, bank, type, transaction_date, activity, title, amount } = request.all()
 
     switch (bank) {
       case true:
@@ -23,22 +37,20 @@ class TransactionController {
 
           if (transaction.description == 'Purchase') {
             foursquare = await axios({
-              url: `https://api.foursquare.com/v2/venues/search?near=Male, MV&query=${transaction.narrative3}&limit=1&client_id=E1AGYMO2NGCXFOVEYC2EVO2HB43IUJDEZVQCMPAC5LXMT0FJ&client_secret=FNRBDZ4YCP0KULDJLL0XO3FVADCEFVBSLOAVNTOLJQEYTR10&v=20180323`,
-              method: 'post',
+              url: `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${transaction.narrative3}%Maldives&inputtype=textquery&fields=type,formatted_address,name,rating,opening_hours,geometry&key=AIzaSyBl6U5R41doIYntDwSeHIOaZsaIk6KmlV8`,
+              method: 'get',
             })
-
+            
             if (foursquare.data) {
-              
               category = await Category.findOrCreate(
-                { name: foursquare.data.response.venues[0].categories[0].name.toLowerCase() },
-                { name: foursquare.data.response.venues[0].categories[0].name.toLowerCase() }
+                { name: foursquare.data.candidates[0].types[0].toLowerCase() },
+                { name: foursquare.data.candidates[0].types[0].toLowerCase() }
               )
 
               merchant = await Merchant.findOrCreate(
-                { name: foursquare.data.response.venues[0].name.toLowerCase() },
-                { name: foursquare.data.response.venues[0].name.toLowerCase(), location: foursquare.data.response.venues[0].location.address, country: foursquare.data.response.venues[0].location.city, category_id: category.id }
+                { name: transaction.narrative3.toLowerCase() },
+                { name: transaction.narrative3.toLowerCase(), location: foursquare.data.candidates[0].formatted_address, country: foursquare.data.candidates[0].formatted_address, category_id: category.id }
               )
-
             }
           }
 
