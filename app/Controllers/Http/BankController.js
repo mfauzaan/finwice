@@ -2,10 +2,10 @@
 const axios = use('axios')
 
 class BankController {
-  async store({ request, auth }) {
+  async login({ request, auth }) {
     const { data } = request.all()
 
-    return data
+    return 'Success'
   }
 }
 
