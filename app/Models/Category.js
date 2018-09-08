@@ -17,6 +17,10 @@ class Category extends Model {
   transactions() {
     return this.hasMany('App/Models/Transaction')
   }
+
+  goals() {
+    return this.hasMany('App/Models/Goal')
+  }
 }
 
 module.exports = Category

@@ -33,4 +33,5 @@ Route.group(() => {
   Route.resource('categories', 'CategoryController').only(['index'])
   Route.resource('transactions', 'TransactionController')
   Route.resource('settings', 'SettingController').only(['index'])
+  Route.resource('goals', 'GoalController')
 }).prefix('v1/users').middleware('auth')
