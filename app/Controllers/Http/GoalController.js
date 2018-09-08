@@ -1,6 +1,8 @@
 'use strict'
 const Goal = use('App/Models/Goal')
 const Category = use('App/Models/Category')
+const Transaction = use('App/Models/Transaction')
+var _ = use('lodash')
 
 class GoalController {
   async index({ auth }) {
@@ -60,6 +62,24 @@ class GoalController {
     return response.status(200).send({
       "title": "Success",
       "body": "Your Goal has been deleted successfully",
+    })
+  }
+
+  async status({ auth, response }) {
+    const income = await Transaction.query().where({ user_id: auth.user.id, type: 'Income' }).fetch()
+    const expense = await Transaction.query().where({ user_id: auth.user.id, type: 'Expense' }).fetch()
+
+    var total = _.sumBy(income.toJSON(), 'amount') - _.sumBy(expense.toJSON(), 'amount')
+    var status = 'Safe'
+
+    if (total <= 0) {
+      status = 'Danger'
+    }
+
+    // Return success msg 
+    return response.status(200).send({
+      "title": status,
+      "tatal": total,
     })
   }
 }
