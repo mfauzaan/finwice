@@ -6,111 +6,61 @@ const axios = use('axios')
 
 class TransactionController {
   async index({ auth }) {
-    var transactions = await Transaction.query().where({ user_id: auth.user.id }).with('merchants.categories').fetch()
-    
-    transactions = transactions.toJSON()
+    // Get requried params
+    var transactions = await Transaction.query().where({ user_id: auth.user.id }).with('categories').fetch()
 
-    for(var i in transactions) {
-      transactions[i].icon = 'default.png'
-      if (transactions[i].merchants) {
-        if (transactions[i].merchants.categories) {
-          transactions[i].icon = `${transactions[i].merchants.categories.name}.png`
-        }
-      }
-      
-    }
     return transactions
   }
 
   async store({ response, request, auth }) {
     // Get Payload
-    const { payload, bank, type, transaction_date, activity, title, amount } = request.all()
+    const { type, transaction_date, amount, category_id } = request.all()
 
-    switch (bank) {
-      case true:
-        var banks = await axios({
-          url: `https://www.bankofmaldives.com.mv/internetbanking/api/login`,
-          method: 'post',
-          data: {
-            username: 'mfauzaan',
-            password: '1cnCete!wd',
-          },
-          withCredentials: true
-        })
+    const category = await Category.find(category_id)
 
-        var banks_data = await axios({
-          url: `https://www.bankofmaldives.com.mv/internetbanking/api/account/71208AF5-65E1-E611-80E5-00155D020F0A/history/today`,
-          method: 'get',
-          withCredentials: true,
-        })
-
-        return banks_data.data
-
-        // Loop transaction  
-        for (var transaction of payload.history) {
-          var category = null
-          var foursquare = null
-          var merchant = null
-          
-
-          if (transaction.description == 'Purchase') {
-            foursquare = await axios({
-              url: `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${transaction.narrative3}%Maldives&inputtype=textquery&fields=type,formatted_address,name,rating,opening_hours,geometry&key=AIzaSyBl6U5R41doIYntDwSeHIOaZsaIk6KmlV8`,
-              method: 'get',
-            })
-            
-            if (foursquare.data) {
-              category = await Category.findOrCreate(
-                { name: foursquare.data.candidates[0].types[0].toLowerCase() },
-                { name: foursquare.data.candidates[0].types[0].toLowerCase() }
-              )
-
-              merchant = await Merchant.findOrCreate(
-                { name: transaction.narrative3.toLowerCase() },
-                { name: transaction.narrative3.toLowerCase(), location: foursquare.data.candidates[0].formatted_address, country: foursquare.data.candidates[0].formatted_address, category_id: category.id }
-              )
-            }
-          }
-
-          // Create Transaction
-          await Transaction.create({
-            type: transaction.description,
-            transaction_date: transaction.bookingDate,
-            activity: transaction.minus == true ? 'Credited' : 'Debited',
-            title: transaction.narrative3,
-            amount: transaction.amount,
-            user_id: auth.user.id,
-            merchant_id: merchant ? merchant.id : null
-          })
-        }
-        break;
-      case false:
-        await Transaction.create({
-          type,
-          transaction_date,
-          activity,
-          title,
-          amount,
-          category_id,
-          user_id: auth.user.id,
-        })
-        break;
-      default:
-        break;
-    }
-
+    await category
+      .transactions()
+      .create({
+        user_id: auth.user.id,
+        type,
+        transaction_date,
+        title: category.name,
+        amount,
+      })
 
     return response.status(200).send('Transaction has been updated successfully.')
   }
 
-  async show() {
+  async update({ params, request, response }) {
+    //  Get Required params
+    const { type, transaction_date, amount } = request.all()
+
+    // Create transctions
+    const transaction = await Transaction.find(params.id)
+
+    // Merge transcations
+    transaction.merge({
+      type,
+      transaction_date,
+      title: category.name,
+      amount,
+    })
+    await transaction.save()
+
+    // Return resposne
+    return response.status(200).send('Transaction has been updated successfully.')
+
   }
 
+  async destroy({ params, response}) {
+    // Ge transaction using provided key
+    const transaction = await Transaction.find(params.id)
 
-  async update() {
-  }
+    // Run Delete operation
+    await transction.delete()
 
-  async destroy() {
+    // Return success msg 
+    return response.status(200).send('Transaction has been updated successfully.')
   }
 }
 
