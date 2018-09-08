@@ -26,7 +26,11 @@ class TransactionController {
         amount,
       })
 
-    return response.status(200).send('Transaction has been updated successfully.')
+
+    return response.status(200).send({
+      "title": "Success",
+      "body": "Your Transaction has been created successfully",
+    })
   }
 
   async update({ params, request, response }) {
@@ -40,25 +44,30 @@ class TransactionController {
     transaction.merge({
       type,
       transaction_date,
-      title: category.name,
       amount,
     })
     await transaction.save()
 
     // Return resposne
-    return response.status(200).send('Transaction has been updated successfully.')
+    return response.status(200).send({
+      "title": "Success",
+      "body": "Your Transaction has been updated successfully",
+    })
 
   }
 
-  async destroy({ params, response}) {
+  async destroy({ params, response }) {
     // Ge transaction using provided key
     const transaction = await Transaction.find(params.id)
 
     // Run Delete operation
-    await transction.delete()
+    await transaction.delete()
 
     // Return success msg 
-    return response.status(200).send('Transaction has been updated successfully.')
+    return response.status(200).send({
+      "title": "Success",
+      "body": "Your Transaction has been deleted successfully",
+    })
   }
 }
 
