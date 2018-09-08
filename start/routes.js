@@ -32,4 +32,5 @@ Route.group(() => {
   Route.post('bank_data', 'BankController.store')
   Route.resource('categories', 'CategoryController').only(['index'])
   Route.resource('transactions', 'TransactionController')
+  Route.resource('settings', 'SettingController').only(['index'])
 }).prefix('v1/users').middleware('auth')
