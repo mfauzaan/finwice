@@ -23,7 +23,6 @@ class UserController {
   async login({ request, auth, response }) {
     // Get Required data
     const { mobile_number, password } = request.all()
-
     
       const userData = await User.findBy({ mobile_number })
 

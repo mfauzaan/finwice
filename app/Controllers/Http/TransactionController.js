@@ -14,7 +14,6 @@ class TransactionController {
       transactions[i].icon = 'default.png'
       if (transactions[i].merchants) {
         if (transactions[i].merchants.categories) {
-         // transactions[i].icon = transactions.merchants.categories
           transactions[i].icon = `${transactions[i].merchants.categories.name}.png`
         }
       }
@@ -29,11 +28,30 @@ class TransactionController {
 
     switch (bank) {
       case true:
+        var banks = await axios({
+          url: `https://www.bankofmaldives.com.mv/internetbanking/api/login`,
+          method: 'post',
+          data: {
+            username: 'mfauzaan',
+            password: '1cnCete!wd',
+          },
+          withCredentials: true
+        })
+
+        var banks_data = await axios({
+          url: `https://www.bankofmaldives.com.mv/internetbanking/api/account/71208AF5-65E1-E611-80E5-00155D020F0A/history/today`,
+          method: 'get',
+          withCredentials: true,
+        })
+
+        return banks_data.data
+
         // Loop transaction  
         for (var transaction of payload.history) {
           var category = null
           var foursquare = null
           var merchant = null
+          
 
           if (transaction.description == 'Purchase') {
             foursquare = await axios({

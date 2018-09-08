@@ -30,6 +30,6 @@ Route.group(() => {
   Route.get('/', 'FeedController.index')
 
   Route.post('bank_data', 'BankController.store')
-
+  Route.resource('categories', 'CategoryController').only(['index'])
   Route.resource('transactions', 'TransactionController')
 }).prefix('v1/').middleware('auth')
