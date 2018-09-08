@@ -1,8 +1,6 @@
 'use strict'
 const Transaction = use('App/Models/Transaction')
 const Category = use('App/Models/Category')
-const Merchant = use('App/Models/Merchant')
-const axios = use('axios')
 
 class TransactionController {
   async index({ auth }) {
