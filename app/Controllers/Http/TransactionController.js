@@ -12,7 +12,7 @@ class TransactionController {
 
   async store({ response, request, auth }) {
     // Get Payload
-    const { type, transaction_date, amount, category_id } = request.all()
+    const { type, transaction_date, amount, category_id, location } = request.all()
 
     const category = await Category.find(category_id)
 
@@ -24,6 +24,7 @@ class TransactionController {
         transaction_date,
         title: category.name,
         amount,
+        location
       })
 
 
@@ -35,7 +36,7 @@ class TransactionController {
 
   async update({ params, request, response }) {
     //  Get Required params
-    const { type, transaction_date, amount } = request.all()
+    const { type, transaction_date, amount, location } = request.all()
 
     // Create transctions
     const transaction = await Transaction.find(params.id)
@@ -45,6 +46,7 @@ class TransactionController {
       type,
       transaction_date,
       amount,
+      location
     })
     await transaction.save()
 

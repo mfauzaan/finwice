@@ -13,6 +13,7 @@ class TransactionSchema extends Schema {
       table.string('type')
       table.string('activity')
       table.float('amount')
+      table.string('location')
       table.timestamp('transaction_date')
       table.timestamps()
     })
