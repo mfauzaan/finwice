@@ -7,7 +7,7 @@ var _ = use('lodash')
 class GoalController {
   async index({ auth }) {
     // Get requried params
-    var goals = await Goal.query().where({ user_id: auth.user.id }).with('categories').fetch()
+    var goals = await Goal.query().where({ user_id: auth.user.id }).orderBy('id', 'desc').with('categories').fetch()
     return goals
   }
 

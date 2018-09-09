@@ -5,7 +5,7 @@ const Category = use('App/Models/Category')
 class TransactionController {
   async index({ auth }) {
     // Get requried params
-    var transactions = await Transaction.query().where({ user_id: auth.user.id }).with('categories').fetch()
+    var transactions = await Transaction.query().where({ user_id: auth.user.id }).orderBy('id', 'desc').with('categories').fetch()
 
     return transactions
   }
