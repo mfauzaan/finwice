@@ -28,3 +28,4 @@ adonis migration:run
 ```
 # finwice
 # finwice
+as
